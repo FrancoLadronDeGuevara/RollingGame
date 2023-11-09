@@ -1,0 +1,54 @@
+[gd_scene load_steps=9 format=3 uid="uid://ccs4wg58ynjkn"]
+
+[ext_resource type="Script" path="res://Scripts/Main.gd" id="1_rxulk"]
+[ext_resource type="PackedScene" uid="uid://ubx8kdk48ckt" path="res://Scenes/Player.tscn" id="1_yew7w"]
+[ext_resource type="PackedScene" uid="uid://yociltvsf56t" path="res://Scenes/Mob.tscn" id="2_64jok"]
+[ext_resource type="PackedScene" uid="uid://f6el85dbjvhl" path="res://Scenes/HUD.tscn" id="4_k6m51"]
+[ext_resource type="AudioStream" uid="uid://bx5ghfwwrrq2p" path="res://art/game-over-arcade.mp3" id="5_1yuc2"]
+[ext_resource type="AudioStream" uid="uid://x7jhschrf3bu" path="res://art/backgroundmusic.mp3" id="5_jdg4f"]
+[ext_resource type="PackedScene" uid="uid://bt1y31i6ud0fh" path="res://Scenes/Background.tscn" id="7_bv0ct"]
+
+[sub_resource type="Curve2D" id="Curve2D_7k7dr"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 480, 720, 0, 0, 0, 0, 0, 720, 0, 0, 0, 0, 0, 0)
+}
+point_count = 5
+
+[node name="Main" type="Node"]
+script = ExtResource("1_rxulk")
+mob_scene = ExtResource("2_64jok")
+
+[node name="Player" parent="." instance=ExtResource("1_yew7w")]
+
+[node name="MobTimer" type="Timer" parent="."]
+wait_time = 0.5
+
+[node name="ScoreTimer" type="Timer" parent="."]
+
+[node name="StartTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
+[node name="StartPosition" type="Marker2D" parent="."]
+position = Vector2(240, 450)
+
+[node name="MobPath" type="Path2D" parent="."]
+curve = SubResource("Curve2D_7k7dr")
+
+[node name="MobSpawnLocation" type="PathFollow2D" parent="MobPath"]
+
+[node name="HUD" parent="." instance=ExtResource("4_k6m51")]
+
+[node name="Music" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_jdg4f")
+
+[node name="DeathSound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_1yuc2")
+
+[node name="ParallaxBackground" parent="." instance=ExtResource("7_bv0ct")]
+
+[connection signal="hit" from="Player" to="." method="game_over"]
+[connection signal="timeout" from="MobTimer" to="." method="_on_mob_timer_timeout"]
+[connection signal="timeout" from="ScoreTimer" to="." method="_on_score_timer_timeout"]
+[connection signal="timeout" from="StartTimer" to="." method="_on_start_timer_timeout"]
+[connection signal="start_game" from="HUD" to="." method="new_game"]
